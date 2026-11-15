@@ -47,9 +47,9 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
 - [x] **10 — Kubernetes**
   - [x] Production-oriented manifests and documented configuration.
   - [x] Build/load/deploy to kind, exercise APIs, replace pod, verify persisted data.
-- [ ] **11 — Distributed search**
-  - [ ] Deterministic sharding, fan-out, merge, health, partial failure behavior.
-  - [ ] Multi-container integration tests and explicit consistency limitations.
+- [x] **11 — Distributed search**
+  - [x] Deterministic sharding, fan-out, merge, health, partial failure behavior.
+  - [x] Multi-container integration tests and explicit consistency limitations.
 - [ ] **12 — Documentation and release**
   - [ ] Architecture SVG/Mermaid, guides, ADRs, API and storage documentation.
   - [ ] Real screenshots, polished README, CI, final clean-clone validation.
@@ -62,6 +62,7 @@ The canonical release commands will be maintained as targets in the root `Makefi
 ```text
 make check              # formatting, lint, unit and integration tests
 make compose-test       # image build, API flow, and restart persistence
+make distributed-test   # two-shard partition, degradation, and recovery
 make ann-benchmarks     # official framework comparative run
 make kind-test          # local cluster deployment and persistence validation
 make e2e                # real-backend browser acceptance tests

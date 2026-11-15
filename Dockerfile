@@ -9,7 +9,7 @@ COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
 COPY crates ./crates
 COPY proto ./proto
 COPY docs/api ./docs/api
-RUN cargo build --locked --release --package axion-server
+RUN cargo build --locked --release --package axion-server --package axion-cluster
 
 FROM debian:bookworm-slim AS runtime
 
@@ -22,6 +22,7 @@ RUN apt-get update \
     && chown axion:axion /var/lib/axion
 
 COPY --from=builder /src/target/release/axion-server /usr/local/bin/axion-server
+COPY --from=builder /src/target/release/axion-cluster /usr/local/bin/axion-cluster
 
 USER 10001:10001
 ENV AXION_HOST=0.0.0.0 \

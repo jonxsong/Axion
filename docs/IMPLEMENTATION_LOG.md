@@ -203,6 +203,21 @@
 - `pnpm audit --prod --audit-level high`: no known vulnerabilities.
 - `pip-audit sdks/python`: no known vulnerabilities.
 
+## 2026-11-15 — Distributed search
+
+### Implemented
+
+- Added a stateless Rust coordinator with deterministic FNV-1a ownership over a sorted shard-name set, authenticated shard calls, concurrent fan-out search, result deduplication, stable score/ID merge ordering, and configurable minimum successful shards.
+- Collection mutations replicate configuration to every shard; vector batches partition records by ID and fail explicitly if any targeted owner fails. Search responses expose successful/total shard counts, partial status, and sanitized per-shard failures.
+- Added a hardened two-shard Compose topology with independent RocksDB volumes plus an isolated acceptance workflow. Documented the single-owner consistency contract and the absence of replication, consensus, automatic failover, and automatic rebalancing.
+
+### Validation
+
+- Coordinator `cargo clippy --all-targets -- -D warnings`: passed; unit tests: 3 passed.
+- Production Linux image built with both `axion-server` and `axion-cluster` release binaries.
+- The multi-container smoke partitioned 20 records across both shards with an exact total of 20, returned a complete two-shard top-k, stopped one shard and reported a successful partial result plus degraded health, then restarted both shards and recovered all records from their RocksDB volumes.
+- The isolated test removed its containers, network, and volumes after validation.
+
 
 
 ## 2026-11-15 — REST API

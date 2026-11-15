@@ -1,4 +1,4 @@
-.PHONY: check web-check compose-test ann-benchmarks kind-test e2e
+.PHONY: check web-check compose-test distributed-test ann-benchmarks kind-test e2e
 
 check:
 	cargo fmt --all -- --check
@@ -12,6 +12,9 @@ web-check:
 
 compose-test:
 	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/compose-smoke.ps1
+
+distributed-test:
+	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/distributed-smoke.ps1
 
 ann-benchmarks:
 	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-ann-benchmarks.ps1

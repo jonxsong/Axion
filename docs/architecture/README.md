@@ -13,5 +13,5 @@ flowchart LR
   A --> O[Metrics / traces / logs]
 ```
 
-Detailed component, persistence, recovery, query, and distributed-search diagrams will evolve with the corresponding tested implementation. The public SVG is generated only from the architecture that exists in code.
+See [storage and recovery](storage.md) and [distributed search](distributed-search.md) for the tested persistence and multi-node consistency models. The public SVG documents only architecture that exists in code.
 
