@@ -122,7 +122,7 @@
 
 ### Implemented
 
-- Added Criterion 0.7 (compatible with the declared Rust 1.85 minimum) as the sole Rust microbenchmark harness.
+- Added Criterion 0.7 as the sole Rust microbenchmark harness.
 - Added deterministic exact-search and HNSW query cases over 10,000 64-dimensional vectors at four search breadths.
 - Added a deterministic 1,000-vector HNSW construction benchmark.
 

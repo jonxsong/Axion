@@ -587,7 +587,7 @@ async fn record_http_metrics(
     state
         .metrics
         .requests
-        .with_label_values(&[&method, response.status().as_str()])
+        .with_label_values(&[method.as_str(), response.status().as_str()])
         .inc();
     state
         .metrics
