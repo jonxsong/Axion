@@ -1,12 +1,15 @@
 use std::env;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::path::PathBuf;
+use std::time::Duration;
 
 use axion_api::{ApiConfig, router};
 use axion_grpc::GrpcService;
 use axion_grpc::pb::axion_server::AxionServer;
-use axion_query::CollectionEngine;
+use axion_query::{CollectionEngine, QueryError};
+use axion_storage::StorageError;
 use tokio::sync::watch;
+use tokio::time::Instant;
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
@@ -38,7 +41,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let allow_any_origin =
         env::var("AXION_CORS_ALLOW_ANY").is_ok_and(|value| value.eq_ignore_ascii_case("true"));
 
-    let engine = CollectionEngine::open(data_dir)?;
+    let storage_open_timeout = env::var("AXION_STORAGE_OPEN_TIMEOUT_SECS")
+        .ok()
+        .and_then(|value| value.parse::<u64>().ok())
+        .map_or(Duration::from_secs(30), Duration::from_secs);
+    let engine = open_engine_with_retry(&data_dir, storage_open_timeout).await?;
     let app = router(
         engine.clone(),
         ApiConfig {
@@ -76,6 +83,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+async fn open_engine_with_retry(
+    data_dir: &PathBuf,
+    timeout: Duration,
+) -> Result<CollectionEngine, QueryError> {
+    let deadline = Instant::now() + timeout;
+    loop {
+        match CollectionEngine::open(data_dir) {
+            Ok(engine) => return Ok(engine),
+            Err(error) if is_transient_storage_lock(&error) && Instant::now() < deadline => {
+                tracing::warn!(
+                    error = %error,
+                    retry_timeout_seconds = timeout.as_secs(),
+                    "RocksDB is still locked by the previous process; retrying"
+                );
+                let remaining = deadline.saturating_duration_since(Instant::now());
+                tokio::time::sleep(remaining.min(Duration::from_millis(500))).await;
+            }
+            Err(error) => return Err(error),
+        }
+    }
+}
+
+fn is_transient_storage_lock(error: &QueryError) -> bool {
+    matches!(
+        error,
+        QueryError::Storage(StorageError::RocksDb(error))
+            if error.to_string().to_ascii_lowercase().contains("lock")
+    )
+}
+
 async fn wait_for_shutdown(mut receiver: watch::Receiver<bool>) {
     if *receiver.borrow() {
         return;
@@ -107,4 +144,29 @@ async fn shutdown_signal() {
         () = terminate => {},
     }
     tracing::info!("graceful shutdown requested");
+}
+
+#[cfg(test)]
+mod tests {
+    use tempfile::tempdir;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn retries_a_transient_rocksdb_lock_and_opens_after_release() {
+        let directory = tempdir().unwrap();
+        let first = CollectionEngine::open(directory.path()).unwrap();
+        let path = directory.path().to_path_buf();
+
+        let result = open_engine_with_retry(&path, Duration::from_millis(10)).await;
+        let Err(error) = result else {
+            panic!("a second RocksDB owner must not open the same directory");
+        };
+        assert!(is_transient_storage_lock(&error));
+
+        drop(first);
+        open_engine_with_retry(&path, Duration::from_millis(10))
+            .await
+            .expect("the directory opens after its first owner releases the lock");
+    }
 }

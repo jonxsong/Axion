@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: axion-config
+  namespace: axion
+  labels:
+    app.kubernetes.io/name: axion
+data:
+  AXION_HOST: "0.0.0.0"
+  AXION_HTTP_PORT: "8080"
+  AXION_GRPC_PORT: "50051"
+  AXION_DATA_DIR: "/var/lib/axion"
+  AXION_STORAGE_OPEN_TIMEOUT_SECS: "30"
+  AXION_CORS_ALLOW_ANY: "false"
+  RUST_LOG: "axion=info,tower_http=info"
+

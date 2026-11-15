@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: axion-web
+  namespace: axion
+  labels:
+    app.kubernetes.io/name: axion-web
+    app.kubernetes.io/component: console
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: axion-web
+    app.kubernetes.io/component: console
+  ports:
+    - name: http
+      port: 3000
+      targetPort: http
+      protocol: TCP
+

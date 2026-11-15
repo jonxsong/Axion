@@ -11,11 +11,15 @@ rust-version.workspace = true
 axion-api.workspace = true
 axion-grpc.workspace = true
 axion-query.workspace = true
+axion-storage.workspace = true
 axum.workspace = true
 tokio.workspace = true
 tonic.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
 
 [lints]
 workspace = true

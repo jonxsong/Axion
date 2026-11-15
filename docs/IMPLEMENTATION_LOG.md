@@ -149,6 +149,23 @@
 - hnswlib recall@10 progressed from 0.9724 at efQuery=8 to 1.0000 at 64; its in-process QPS ranged from 158,887.2 to 17,441.2.
 - The comparison is intentionally end-to-end: Axion includes HTTP JSON handling and RocksDB metadata retrieval, while hnswlib is invoked in process. Raw CSV, framework plot, host metadata, exact revisions, and an interpretation are committed under `benchmarks/results/20261115-224055/`.
 
+## 2026-11-15 — Kubernetes deployment and persistence
+
+### Implemented
+
+- Added a kustomize base with a restricted namespace, single-writer `Recreate` Axion Deployment, web Deployment, HTTP/gRPC/web Services, ConfigMap, external Secret reference, `ReadWriteOnce` PVC, requests/limits, startup/readiness/liveness probes, read-only root filesystems, and non-root security contexts.
+- Added a kind workflow that builds and loads the real production images, creates a development Secret, deploys both workloads, performs authenticated writes, replaces the live Axion pod, verifies RocksDB recovery, checks the web Service, and rejects any replacement-pod restart.
+- A first replacement exposed a transient kind hostPath RocksDB lock race. Added a bounded 30-second retry for lock errors only plus a real double-open unit test; non-lock storage, schema, and configuration failures remain fail-fast.
+
+### Validation
+
+- kind v0.33.0 with Kubernetes v1.37.0: cluster creation and manifest admission passed under the `restricted` Pod Security profile.
+- Both Deployments reached 1/1 Ready and both Services were routable through `kubectl port-forward`.
+- `axion-data` dynamically bound as a 2 GiB `ReadWriteOnce` claim using the `standard` StorageClass.
+- An authenticated record written before deletion remained searchable after pod `axion-7b4bc7b869-5sh5b` was replaced by `axion-7b4bc7b869-67nn6`.
+- The replacement pod remained Ready with zero restarts through the stability interval; the web landing page returned HTTP 200 with expected content.
+- Exact environment and acceptance evidence are recorded in `deploy/kubernetes/VALIDATION.md`.
+
 
 
 ## 2026-11-15 — REST API

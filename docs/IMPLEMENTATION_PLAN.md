@@ -44,9 +44,9 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
   - [x] Criterion exact/HNSW/index microbenchmarks.
   - [x] Official ANN-Benchmarks adapter and standardized dataset workflow.
   - [x] Recall/QPS results compared with established algorithms on the same host.
-- [ ] **10 — Kubernetes**
-  - [ ] Production-oriented manifests and documented configuration.
-  - [ ] Build/load/deploy to kind, exercise APIs, replace pod, verify persisted data.
+- [x] **10 — Kubernetes**
+  - [x] Production-oriented manifests and documented configuration.
+  - [x] Build/load/deploy to kind, exercise APIs, replace pod, verify persisted data.
 - [ ] **11 — Distributed search**
   - [ ] Deterministic sharding, fan-out, merge, health, partial failure behavior.
   - [ ] Multi-container integration tests and explicit consistency limitations.
