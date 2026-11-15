@@ -166,6 +166,24 @@
 - The replacement pod remained Ready with zero restarts through the stability interval; the web landing page returned HTTP 200 with expected content.
 - Exact environment and acceptance evidence are recorded in `deploy/kubernetes/VALIDATION.md`.
 
+## 2026-11-15 — Real-backend browser acceptance
+
+### Implemented
+
+- Added Playwright Chromium acceptance tests and an isolated Compose workflow with dedicated ports and a dedicated RocksDB volume.
+- The desktop flow creates a collection through the real console, inserts three vectors through the live Next.js proxy, verifies the PCA explorer, executes approximate search, restarts the real Axion container, verifies the same result after recovery, exercises a dimension-mismatch error, and deletes the collection.
+- Added a 390×844 responsive acceptance test and accessible names for compact navigation, form controls, projection points, and destructive actions.
+- Captured optimized real application screenshots for Overview, Collections, Vector Explorer, and Search Playground under `docs/assets/`.
+
+### Validation
+
+- ESLint with zero warnings: passed.
+- TypeScript strict check: passed.
+- Vitest: 2 passed.
+- Next.js production build in the web container: passed.
+- Playwright Chromium against the isolated real Compose backend: 2 passed, including backend restart persistence and mobile navigation.
+- The isolated E2E containers, network, and named volume were removed by the workflow after successful cleanup; the unrelated development stack was not modified.
+
 
 
 ## 2026-11-15 — REST API

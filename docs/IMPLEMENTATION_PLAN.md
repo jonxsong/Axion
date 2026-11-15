@@ -33,10 +33,10 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
 - [x] **6 — Container workflow**
   - [x] Multi-stage images and `docker compose up --build`.
   - [x] Health, real API integration flow, restart persistence, clean shutdown.
-- [ ] **7 — Web product**
+- [x] **7 — Web product**
   - [x] Responsive landing page and real management console.
   - [x] Collections, vector explorer, search playground, performance, health.
-  - [ ] Vitest, Playwright against the real backend, accessibility and visual QA.
+  - [x] Vitest, Playwright against the real backend, accessibility and visual QA.
 - [ ] **8 — Observability and hardening**
   - [ ] Prometheus metrics, structured logs, request IDs, OpenTelemetry hooks.
   - [ ] Threat model, dependency audit, concurrency and recovery validation.

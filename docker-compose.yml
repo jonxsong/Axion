@@ -89,7 +89,7 @@ services:
 
 volumes:
   axion-data:
-    name: axion-data
+    name: ${AXION_DATA_VOLUME:-axion-data}
   prometheus-data:
-    name: axion-prometheus-data
+    name: ${AXION_PROMETHEUS_VOLUME:-axion-prometheus-data}
 

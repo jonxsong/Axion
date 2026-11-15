@@ -20,5 +20,5 @@ kind-test:
 	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kind-smoke.ps1
 
 e2e:
-	pnpm --filter @axion/web e2e
+	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/e2e.ps1
 
