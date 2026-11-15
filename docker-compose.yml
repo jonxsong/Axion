@@ -13,6 +13,8 @@ services:
       AXION_DATA_DIR: /var/lib/axion
       AXION_API_KEY: ${AXION_API_KEY:-}
       AXION_CORS_ALLOW_ANY: "false"
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-axion-server}
       RUST_LOG: ${RUST_LOG:-axion=info,tower_http=info}
     ports:
       - "${AXION_HTTP_PORT:-8080}:8080"

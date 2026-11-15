@@ -65,7 +65,9 @@ struct ApiMetrics {
     requests: IntCounterVec,
     request_duration: HistogramVec,
     searches: IntCounterVec,
+    search_duration: HistogramVec,
     vectors_written: IntCounterVec,
+    write_duration: HistogramVec,
 }
 
 impl ApiMetrics {
@@ -92,10 +94,26 @@ impl ApiMetrics {
             &["mode"],
         )
         .expect("static metric definition is valid");
+        let search_duration = HistogramVec::new(
+            HistogramOpts::new(
+                "axion_search_duration_seconds",
+                "End-to-end engine search duration in seconds",
+            ),
+            &["mode", "filter"],
+        )
+        .expect("static metric definition is valid");
         let vectors_written = IntCounterVec::new(
             Opts::new(
                 "axion_vectors_written_total",
                 "Vectors accepted by batch type",
+            ),
+            &["operation"],
+        )
+        .expect("static metric definition is valid");
+        let write_duration = HistogramVec::new(
+            HistogramOpts::new(
+                "axion_vector_write_duration_seconds",
+                "Durable vector write and index update duration in seconds",
             ),
             &["operation"],
         )
@@ -110,14 +128,22 @@ impl ApiMetrics {
             .register(Box::new(searches.clone()))
             .expect("metric names are unique");
         registry
+            .register(Box::new(search_duration.clone()))
+            .expect("metric names are unique");
+        registry
             .register(Box::new(vectors_written.clone()))
+            .expect("metric names are unique");
+        registry
+            .register(Box::new(write_duration.clone()))
             .expect("metric names are unique");
         Self {
             registry: Arc::new(registry),
             requests,
             request_duration,
             searches,
+            search_duration,
             vectors_written,
+            write_duration,
         }
     }
 }
@@ -402,6 +428,7 @@ async fn upsert_one(
     ApiJson(input): ApiJson<VectorInput>,
 ) -> Result<impl IntoResponse, ApiError> {
     let record = VectorRecord::try_from(input)?;
+    let started = Instant::now();
     let engine = state.engine.clone();
     engine_call(move || engine.upsert(&name, &[record])).await?;
     state
@@ -409,6 +436,11 @@ async fn upsert_one(
         .vectors_written
         .with_label_values(&["single"])
         .inc();
+    state
+        .metrics
+        .write_duration
+        .with_label_values(&["single"])
+        .observe(started.elapsed().as_secs_f64());
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -428,6 +460,7 @@ async fn upsert_batch(
         .map(VectorRecord::try_from)
         .collect::<Result<Vec<_>, _>>()?;
     let count = records.len();
+    let started = Instant::now();
     let engine = state.engine.clone();
     engine_call(move || engine.upsert(&name, &records)).await?;
     state
@@ -435,6 +468,11 @@ async fn upsert_batch(
         .vectors_written
         .with_label_values(&["batch"])
         .inc_by(u64::try_from(count).unwrap_or(u64::MAX));
+    state
+        .metrics
+        .write_duration
+        .with_label_values(&["batch"])
+        .observe(started.elapsed().as_secs_f64());
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -487,6 +525,15 @@ async fn search(
     ApiJson(input): ApiJson<SearchInput>,
 ) -> Result<impl IntoResponse, ApiError> {
     let mode = input.mode;
+    let filter_label = if input.filter.is_some() {
+        "filtered"
+    } else {
+        "unfiltered"
+    };
+    let mode_label = match mode {
+        SearchMode::Exact => "exact",
+        SearchMode::Approximate => "approximate",
+    };
     let request = EngineSearchRequest {
         vector: DenseVector::new(input.vector)
             .map_err(|error| ApiError::bad_request(error.to_string()))?,
@@ -501,14 +548,17 @@ async fn search(
     state
         .metrics
         .searches
-        .with_label_values(&[match mode {
-            SearchMode::Exact => "exact",
-            SearchMode::Approximate => "approximate",
-        }])
+        .with_label_values(&[mode_label])
         .inc();
+    let elapsed = started.elapsed();
+    state
+        .metrics
+        .search_duration
+        .with_label_values(&[mode_label, filter_label])
+        .observe(elapsed.as_secs_f64());
     Ok(Json(SearchResponse {
         results,
-        took_ms: started.elapsed().as_secs_f64() * 1000.0,
+        took_ms: elapsed.as_secs_f64() * 1000.0,
     }))
 }
 
@@ -582,8 +632,15 @@ async fn record_http_metrics(
     next: Next,
 ) -> Response {
     let method = request.method().as_str().to_owned();
+    let uri = request.uri().path().to_owned();
     let started = Instant::now();
     let response = next.run(request).await;
+    let elapsed = started.elapsed();
+    let request_id = response
+        .headers()
+        .get("x-request-id")
+        .and_then(|value| value.to_str().ok())
+        .unwrap_or("unavailable");
     state
         .metrics
         .requests
@@ -593,7 +650,15 @@ async fn record_http_metrics(
         .metrics
         .request_duration
         .with_label_values(&[&method])
-        .observe(started.elapsed().as_secs_f64());
+        .observe(elapsed.as_secs_f64());
+    tracing::info!(
+        request_id,
+        method,
+        uri,
+        status = response.status().as_u16(),
+        duration_ms = elapsed.as_secs_f64() * 1000.0,
+        "HTTP request completed"
+    );
     response
 }
 
@@ -637,6 +702,7 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(response.status(), StatusCode::CREATED);
+        assert!(response.headers().contains_key("x-request-id"));
 
         let response = app
             .clone()
@@ -694,7 +760,10 @@ mod tests {
             .unwrap();
         assert_eq!(metrics.status(), StatusCode::OK);
         let body = metrics.into_body().collect().await.unwrap().to_bytes();
-        assert!(String::from_utf8_lossy(&body).contains("axion_searches_total"));
+        let metrics = String::from_utf8_lossy(&body);
+        assert!(metrics.contains("axion_searches_total"));
+        assert!(metrics.contains("axion_search_duration_seconds"));
+        assert!(metrics.contains("axion_vector_write_duration_seconds"));
     }
 
     #[tokio::test]

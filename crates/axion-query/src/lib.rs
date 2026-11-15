@@ -346,6 +346,9 @@ fn metadata_value<'a>(metadata: &'a Map<String, Value>, field: &str) -> Option<&
 
 #[cfg(test)]
 mod tests {
+    use std::sync::{Arc, Barrier};
+    use std::thread;
+
     use axion_core::DistanceMetric;
     use axion_index::HnswConfig;
     use tempfile::TempDir;
@@ -477,5 +480,66 @@ mod tests {
             Err(QueryError::Core(CoreError::DimensionMismatch { .. }))
         ));
         assert!(engine.get_record("documents", "bad").unwrap().is_none());
+    }
+
+    #[test]
+    fn concurrent_writes_and_searches_remain_consistent() {
+        let directory = TempDir::new().unwrap();
+        let engine = Arc::new(CollectionEngine::open(directory.path()).unwrap());
+        engine.create_collection(collection()).unwrap();
+        let barrier = Arc::new(Barrier::new(8));
+        let mut workers = Vec::new();
+
+        for worker in 0..4 {
+            let engine = Arc::clone(&engine);
+            let barrier = Arc::clone(&barrier);
+            workers.push(thread::spawn(move || {
+                barrier.wait();
+                for row in 0..25 {
+                    let id = format!("writer-{worker}-{row}");
+                    engine
+                        .upsert("documents", &[record(&id, [0.1, 0.2], "load", true)])
+                        .unwrap();
+                }
+            }));
+        }
+        for _ in 0..4 {
+            let engine = Arc::clone(&engine);
+            let barrier = Arc::clone(&barrier);
+            workers.push(thread::spawn(move || {
+                barrier.wait();
+                for _ in 0..50 {
+                    engine
+                        .search(
+                            "documents",
+                            &SearchRequest {
+                                vector: DenseVector::new(vec![0.0, 0.0]).unwrap(),
+                                top_k: 10,
+                                mode: SearchMode::Approximate,
+                                filter: None,
+                                ef_search: Some(64),
+                            },
+                        )
+                        .unwrap();
+                }
+            }));
+        }
+        for worker in workers {
+            worker.join().unwrap();
+        }
+
+        assert_eq!(
+            engine.get_collection("documents").unwrap().vector_count,
+            100
+        );
+        drop(engine);
+        assert_eq!(
+            CollectionEngine::open(directory.path())
+                .unwrap()
+                .get_collection("documents")
+                .unwrap()
+                .vector_count,
+            100
+        );
     }
 }

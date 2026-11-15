@@ -37,9 +37,9 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
   - [x] Responsive landing page and real management console.
   - [x] Collections, vector explorer, search playground, performance, health.
   - [x] Vitest, Playwright against the real backend, accessibility and visual QA.
-- [ ] **8 — Observability and hardening**
-  - [ ] Prometheus metrics, structured logs, request IDs, OpenTelemetry hooks.
-  - [ ] Threat model, dependency audit, concurrency and recovery validation.
+- [x] **8 — Observability and hardening**
+  - [x] Prometheus metrics, structured logs, request IDs, OpenTelemetry hooks.
+  - [x] Threat model, dependency audit, concurrency and recovery validation.
 - [x] **9 — Benchmarks**
   - [x] Criterion exact/HNSW/index microbenchmarks.
   - [x] Official ANN-Benchmarks adapter and standardized dataset workflow.

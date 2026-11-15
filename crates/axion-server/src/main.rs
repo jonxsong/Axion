@@ -8,18 +8,19 @@ use axion_grpc::GrpcService;
 use axion_grpc::pb::axion_server::AxionServer;
 use axion_query::{CollectionEngine, QueryError};
 use axion_storage::StorageError;
+use opentelemetry::global;
+use opentelemetry::trace::TracerProvider as _;
+use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_sdk::trace::SdkTracerProvider;
 use tokio::sync::watch;
 use tokio::time::Instant;
 use tracing_subscriber::EnvFilter;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("axion=info")),
-        )
-        .json()
-        .init();
+    let tracer_provider = init_tracing()?;
 
     let data_dir =
         env::var_os("AXION_DATA_DIR").map_or_else(|| PathBuf::from("./data"), PathBuf::from);
@@ -79,8 +80,40 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .await
             .map_err(|error| -> Box<dyn std::error::Error> { Box::new(error) })
     };
-    tokio::try_join!(rest, grpc)?;
+    let serve_result = tokio::try_join!(rest, grpc);
+    if let Some(provider) = tracer_provider {
+        provider.shutdown()?;
+    }
+    serve_result?;
     Ok(())
+}
+
+fn init_tracing() -> Result<Option<SdkTracerProvider>, Box<dyn std::error::Error>> {
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("axion=info"));
+    let provider = env::var("OTEL_EXPORTER_OTLP_ENDPOINT")
+        .ok()
+        .filter(|endpoint| !endpoint.is_empty())
+        .map(|endpoint| {
+            let exporter = opentelemetry_otlp::SpanExporter::builder()
+                .with_tonic()
+                .with_endpoint(endpoint)
+                .build()?;
+            let provider = SdkTracerProvider::builder()
+                .with_batch_exporter(exporter)
+                .build();
+            global::set_tracer_provider(provider.clone());
+            Ok::<_, opentelemetry_otlp::ExporterBuildError>(provider)
+        })
+        .transpose()?;
+    let telemetry = provider.as_ref().map(|provider| {
+        tracing_opentelemetry::layer().with_tracer(provider.tracer("axion-server"))
+    });
+    tracing_subscriber::registry()
+        .with(filter)
+        .with(tracing_subscriber::fmt::layer().json())
+        .with(telemetry)
+        .init();
+    Ok(provider)
 }
 
 async fn open_engine_with_retry(

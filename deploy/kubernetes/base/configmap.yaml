@@ -12,5 +12,7 @@ data:
   AXION_DATA_DIR: "/var/lib/axion"
   AXION_STORAGE_OPEN_TIMEOUT_SECS: "30"
   AXION_CORS_ALLOW_ANY: "false"
+  OTEL_EXPORTER_OTLP_ENDPOINT: ""
+  OTEL_SERVICE_NAME: "axion-server"
   RUST_LOG: "axion=info,tower_http=info"
 

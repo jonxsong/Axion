@@ -421,4 +421,33 @@ mod tests {
         assert_eq!(recovered.len(), 2);
         assert_eq!(recovered["one"], [1.0, 0.0, 1.0]);
     }
+
+    #[test]
+    fn invalid_batch_is_rejected_without_partial_writes() {
+        let directory = TempDir::new().unwrap();
+        let store = RocksStore::open(directory.path()).unwrap();
+        store.create_collection(&config("atomic")).unwrap();
+        let error = store
+            .upsert_records("atomic", &[record("valid", 1.0), record("", 2.0)])
+            .unwrap_err();
+        assert!(matches!(error, StorageError::InvalidRecordId));
+        assert!(store.get_record("atomic", "valid").unwrap().is_none());
+    }
+
+    #[test]
+    fn rejects_an_unknown_storage_schema() {
+        let directory = TempDir::new().unwrap();
+        drop(RocksStore::open(directory.path()).unwrap());
+        {
+            let database = DB::open_default(directory.path()).unwrap();
+            database.put(SCHEMA_KEY, b"999").unwrap();
+        }
+        let Err(error) = RocksStore::open(directory.path()) else {
+            panic!("an unknown schema must not open");
+        };
+        assert!(matches!(
+            error,
+            StorageError::UnsupportedSchema(version) if version == "999"
+        ));
+    }
 }

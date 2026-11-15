@@ -13,9 +13,13 @@ axion-grpc.workspace = true
 axion-query.workspace = true
 axion-storage.workspace = true
 axum.workspace = true
+opentelemetry.workspace = true
+opentelemetry-otlp.workspace = true
+opentelemetry_sdk.workspace = true
 tokio.workspace = true
 tonic.workspace = true
 tracing.workspace = true
+tracing-opentelemetry.workspace = true
 tracing-subscriber.workspace = true
 
 [dev-dependencies]

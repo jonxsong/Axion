@@ -184,6 +184,25 @@
 - Playwright Chromium against the isolated real Compose backend: 2 passed, including backend restart persistence and mobile navigation.
 - The isolated E2E containers, network, and named volume were removed by the workflow after successful cleanup; the unrelated development stack was not modified.
 
+## 2026-11-15 — Observability and security hardening
+
+### Implemented
+
+- Expanded bounded-label Prometheus instrumentation with search-duration histograms split by mode/filter presence and durable vector-write histograms split by single/batch operation.
+- Structured HTTP completion logs now carry the propagated request ID, method, path, status, and elapsed milliseconds. Request IDs are returned to clients but never used as metric labels.
+- Added optional OTLP/gRPC tracing with the current OpenTelemetry Rust SDK. No exporter is created unless `OTEL_EXPORTER_OTLP_ENDPOINT` is non-empty, and the tracer provider is flushed during graceful shutdown.
+- Added concurrent search/write recovery coverage, invalid-batch atomicity coverage, unknown-schema fail-closed coverage, a threat model, security policy, and operator-focused observability guide.
+
+### Validation
+
+- `cargo fmt --all -- --check`: passed.
+- `cargo clippy --workspace --all-targets -- -D warnings`: passed.
+- `cargo test --workspace`: 25 passed, including 100 concurrent acknowledged writes followed by reopen/reconstruction.
+- The API integration test asserts `x-request-id` and the new Prometheus metric families.
+- `cargo audit` with 1,509 RustSec advisories: no known vulnerabilities.
+- `pnpm audit --prod --audit-level high`: no known vulnerabilities.
+- `pip-audit sdks/python`: no known vulnerabilities.
+
 
 
 ## 2026-11-15 — REST API
