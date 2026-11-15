@@ -118,6 +118,21 @@
 - Both server and web containers reached Docker health status `healthy`; the web landing page returned HTTP 200.
 - The named `axion-data` volume was retained. Compose containers can be stopped without deleting that volume.
 
+## 2026-11-15 — Criterion microbenchmarks
+
+### Implemented
+
+- Added Criterion 0.7 (compatible with the declared Rust 1.85 minimum) as the sole Rust microbenchmark harness.
+- Added deterministic exact-search and HNSW query cases over 10,000 64-dimensional vectors at four search breadths.
+- Added a deterministic 1,000-vector HNSW construction benchmark.
+
+### Validation
+
+- `cargo check --bench search -p axion-index`: passed.
+- `cargo bench --locked -p axion-index --bench search`: passed.
+- Committed the Criterion estimate JSON and a host/configuration report under `benchmarks/results/criterion-20261115/`.
+- The results are explicitly scoped to local implementation analysis; comparative recall and QPS remain owned by the official ANN-Benchmarks release gate.
+
 
 
 ## 2026-11-15 — REST API

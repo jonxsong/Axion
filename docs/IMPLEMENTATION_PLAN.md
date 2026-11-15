@@ -41,7 +41,7 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
   - [ ] Prometheus metrics, structured logs, request IDs, OpenTelemetry hooks.
   - [ ] Threat model, dependency audit, concurrency and recovery validation.
 - [ ] **9 — Benchmarks**
-  - [ ] Criterion exact/HNSW/index microbenchmarks.
+  - [x] Criterion exact/HNSW/index microbenchmarks.
   - [ ] Official ANN-Benchmarks adapter and standardized dataset workflow.
   - [ ] Recall/QPS results compared with established algorithms on the same host.
 - [ ] **10 — Kubernetes**

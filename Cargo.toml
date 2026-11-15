@@ -25,6 +25,7 @@ axion-index = { path = "crates/axion-index" }
 axion-query = { path = "crates/axion-query" }
 axion-storage = { path = "crates/axion-storage" }
 axum = { version = "0.8", features = ["macros"] }
+criterion = { version = "0.7", features = ["html_reports"] }
 http = "1.3"
 http-body-util = "0.1"
 prometheus = "0.14"
