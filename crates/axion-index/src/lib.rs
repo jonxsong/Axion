@@ -199,14 +199,19 @@ impl HnswIndex {
             )?;
             let selected = candidates
                 .into_iter()
-                .filter(|candidate| candidate.node != new_index)
+                .filter(|candidate| {
+                    candidate.node != new_index && !self.nodes[candidate.node].deleted
+                })
                 .take(self.max_connections(layer))
                 .map(|candidate| candidate.node)
                 .collect::<Vec<_>>();
             self.nodes[new_index].neighbors[layer].clone_from(&selected);
+            // Keep reciprocal links. Pruning them independently can disconnect
+            // every incoming path to a newer node, making recall plateau even
+            // as ef_search grows. Each insertion still adds O(M) edges, so the
+            // graph's total storage remains O(MN).
             for neighbor in selected {
                 self.nodes[neighbor].neighbors[layer].push(new_index);
-                self.prune_neighbors(neighbor, layer);
             }
             if let Some(closest) = self.nodes[new_index].neighbors[layer].first() {
                 entry = *closest;
@@ -431,31 +436,6 @@ impl HnswIndex {
         });
         Ok(output)
     }
-
-    fn prune_neighbors(&mut self, node: usize, layer: usize) {
-        let limit = self.max_connections(layer);
-        if self.nodes[node].neighbors[layer].len() <= limit {
-            return;
-        }
-        let reference = self.nodes[node].vector.clone();
-        let mut neighbors = std::mem::take(&mut self.nodes[node].neighbors[layer]);
-        neighbors.sort_by(|left, right| {
-            let left_score = self
-                .metric
-                .score(&reference, &self.nodes[*left].vector)
-                .expect("all indexed vectors share dimensions");
-            let right_score = self
-                .metric
-                .score(&reference, &self.nodes[*right].vector)
-                .expect("all indexed vectors share dimensions");
-            right_score
-                .total_cmp(&left_score)
-                .then_with(|| self.nodes[*left].id.cmp(&self.nodes[*right].id))
-        });
-        neighbors.dedup();
-        neighbors.truncate(limit);
-        self.nodes[node].neighbors[layer] = neighbors;
-    }
 }
 
 #[cfg(test)]
@@ -567,6 +547,42 @@ mod tests {
         }
         let recall = f64::from(hits) / f64::from(total);
         assert!(recall >= 0.90, "recall@10 was {recall:.3}");
+    }
+
+    #[test]
+    fn every_inserted_node_is_reachable_from_the_entry_point() {
+        let mut index = HnswIndex::new(
+            20,
+            DistanceMetric::Euclidean,
+            HnswConfig {
+                m: 16,
+                ef_construction: 200,
+                ef_search: 64,
+                random_seed: 2_802_896_897,
+            },
+        )
+        .unwrap();
+        let mut rng = ChaCha8Rng::seed_from_u64(71_142_026);
+        for row in 0..2_000_u32 {
+            let values = (0..20)
+                .map(|_| rng.random_range(0.0_f32..1.0))
+                .collect::<Vec<_>>();
+            index
+                .insert(row.to_string(), vector(values))
+                .expect("generated vectors are valid");
+        }
+
+        let entry = index.entry_point.unwrap();
+        let mut reachable = HashSet::from([entry]);
+        let mut pending = vec![entry];
+        while let Some(node) = pending.pop() {
+            for &neighbor in &index.nodes[node].neighbors[0] {
+                if reachable.insert(neighbor) {
+                    pending.push(neighbor);
+                }
+            }
+        }
+        assert_eq!(reachable.len(), index.nodes.len());
     }
 
     #[test]
