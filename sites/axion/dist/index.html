@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#090a0c" />
+    <meta
+      name="description"
+      content="Axion is a durable Rust vector search engine with native HNSW, RocksDB, REST and gRPC APIs, official ANN-Benchmarks evidence, and validated Kubernetes deployment."
+    />
+    <meta property="og:title" content="Axion — Vector Search from First Principles" />
+    <meta
+      property="og:description"
+      content="A durable Rust vector engine with evidence-backed performance and production deployment paths."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://axion-vector-search.perkyaisle4.chatgpt.site" />
+    <title>Axion — Vector Search from First Principles</title>
+    <link rel="icon" href="assets/axion-logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="nav shell">
+      <a class="brand" href="#top" aria-label="Axion home">
+        <img src="assets/axion-logo.svg" alt="" width="31" height="31" />
+        <span>AXION</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#engine">Engine</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#deployment">Deploy</a>
+        <a href="#console">Console</a>
+      </nav>
+      <a class="button button-small button-ghost" href="https://github.com/jonxsong/Axion">GitHub <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="main">
+      <section class="hero shell" id="top">
+        <div class="hero-copy reveal">
+          <p class="eyebrow"><span></span> Open-source vector infrastructure</p>
+          <h1>Vector search,<br /><em>engineered</em> from first principles.</h1>
+          <p class="hero-lede">
+            Axion is a durable Rust vector engine with native HNSW, RocksDB, REST and gRPC APIs,
+            a typed Python client, and deployment paths that are validated—not merely documented.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#quickstart">Start building <span aria-hidden="true">→</span></a>
+            <a class="button button-ghost" href="https://github.com/jonxsong/Axion#readme">Read the docs</a>
+          </div>
+          <div class="proof-row" aria-label="Release highlights">
+            <span><i></i> RocksDB default</span>
+            <span><i></i> Official ANN-Benchmarks</span>
+            <span><i></i> kind-validated</span>
+          </div>
+        </div>
+
+        <div class="vector-stage reveal" aria-label="Interactive HNSW vector graph illustration">
+          <div class="stage-grid"></div>
+          <canvas id="vector-canvas" width="720" height="650" aria-hidden="true"></canvas>
+          <div class="query-card">
+            <span>QUERY / 384D</span>
+            <strong>nearest_neighbors(k=10)</strong>
+          </div>
+          <div class="stage-status"><span></span> HNSW / READY</div>
+          <p>Move your pointer to perturb the query vector.</p>
+        </div>
+      </section>
+
+      <section class="principles shell" aria-label="Engineering principles">
+        <p>THE PARTS THAT MATTER</p>
+        <div><span>01</span> Predictable latency</div>
+        <div><span>02</span> Explicit trade-offs</div>
+        <div><span>03</span> Durable state</div>
+        <div><span>04</span> Open internals</div>
+      </section>
+
+      <section class="section shell" id="engine">
+        <div class="section-heading reveal">
+          <div>
+            <p class="kicker">01 / THE ENGINE</p>
+            <h2>A short, inspectable path from vector to answer.</h2>
+          </div>
+          <p>
+            API boundaries validate. The collection engine plans and synchronizes. Exact or HNSW
+            indexes score candidates. RocksDB owns durable truth.
+          </p>
+        </div>
+
+        <ol class="pipeline reveal">
+          <li><span>01</span><strong>Clients</strong><small>REST · gRPC · Python</small></li>
+          <li><span>02</span><strong>API boundary</strong><small>Typed validation</small></li>
+          <li><span>03</span><strong>Query engine</strong><small>Filter · plan · merge</small></li>
+          <li><span>04</span><strong>Exact / HNSW</strong><small>Deterministic scoring</small></li>
+          <li><span>05</span><strong>RocksDB</strong><small>Sync WAL · recovery</small></li>
+        </ol>
+
+        <div class="architecture-frame reveal">
+          <img
+            src="assets/axion-architecture.svg"
+            alt="Axion architecture showing clients flowing through REST and gRPC APIs, query planning, exact and HNSW indexes, RocksDB storage, and operational telemetry"
+          />
+        </div>
+      </section>
+
+      <section class="section shell" id="capabilities">
+        <div class="section-heading reveal">
+          <div>
+            <p class="kicker">02 / CAPABILITIES</p>
+            <h2>Infrastructure, not theater.</h2>
+          </div>
+          <p>Every claim below has an implementation and an executable validation path in the repository.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="reveal"><b>⌁</b><h3>Native multilayer HNSW</h3><p>Rust implementation with explicit construction and search breadth controls, stable tie ordering, and exact search as a correctness oracle.</p></article>
+          <article class="reveal"><b>▣</b><h3>Durable by default</h3><p>RocksDB is the default engine. Synchronous write batches commit records before acknowledgement and rebuild the derived graph deterministically.</p></article>
+          <article class="reveal"><b>⌘</b><h3>Metadata-aware</h3><p>Boolean filters, nested JSON fields, documented exact pre-filter semantics, bounded pagination, and atomic batch upserts.</p></article>
+          <article class="reveal"><b>↔</b><h3>REST, gRPC, Python</h3><p>Versioned OpenAPI and protobuf contracts plus typed synchronous and asynchronous Python clients.</p></article>
+          <article class="reveal"><b>◫</b><h3>Operationally visible</h3><p>Structured JSON logs, request IDs, Prometheus counters and histograms, optional OTLP tracing, and separate health probes.</p></article>
+          <article class="reveal"><b>⎈</b><h3>Deployable</h3><p>Hardened multi-stage images, Compose, Kubernetes resources, secret references, resource limits, health probes, and persistent volumes.</p></article>
+        </div>
+      </section>
+
+      <section class="section shell benchmark" id="evidence">
+        <div class="section-heading reveal">
+          <div>
+            <p class="kicker">03 / MEASURED SEARCH</p>
+            <h2>Numbers earn their place.</h2>
+          </div>
+          <p>
+            The committed comparison uses the official ANN-Benchmarks framework, its standardized
+            <code>random-xs-20-euclidean</code> dataset, three timed runs, and one pinned CPU.
+          </p>
+        </div>
+
+        <div class="benchmark-layout reveal">
+          <figure>
+            <img src="assets/recall-vs-qps.png" alt="Recall versus queries per second chart comparing Axion and hnswlib" />
+            <figcaption>End-to-end Axion HTTP + RocksDB retrieval versus in-process hnswlib. Full methodology is committed.</figcaption>
+          </figure>
+          <div class="metric-stack">
+            <div><span>RECALL@10</span><strong>1.0000</strong><small>ef_search 64</small></div>
+            <div><span>QUERIES / SEC</span><strong>3,873.9</strong><small>ef_search 8 · recall 0.984</small></div>
+            <div><span>DATASET</span><strong>10K × 20D</strong><small>9K train · 1K queries</small></div>
+            <a href="https://github.com/jonxsong/Axion/tree/main/benchmarks/results/20261115-224055">Inspect raw evidence <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <p class="evidence-note">
+          Criterion measures Rust components. ANN-Benchmarks measures comparative search behavior.
+          The repository publishes configurations, raw CSV, host metadata, exact revisions, and limitations.
+        </p>
+      </section>
+
+      <section class="section shell deploy" id="deployment">
+        <div class="section-heading reveal">
+          <div>
+            <p class="kicker">04 / DEPLOYMENT</p>
+            <h2>Persistence is tested through failure.</h2>
+          </div>
+          <p>
+            The kind workflow builds and loads real images, writes authenticated data, deletes the live
+            server pod, waits for replacement, and verifies the vector from the same PVC.
+          </p>
+        </div>
+
+        <div class="deploy-grid">
+          <article class="reveal">
+            <span class="status-tag">LOCAL</span>
+            <h3>Docker Compose</h3>
+            <p>Non-root read-only containers, a named RocksDB volume, health checks, API authentication, and the full console.</p>
+            <code>docker compose up --build -d</code>
+          </article>
+          <article class="reveal featured">
+            <span class="status-tag">VALIDATED</span>
+            <h3>Kubernetes</h3>
+            <p>Deployments, Services, ConfigMap, Secret references, PVC, restricted security context, resources, startup/readiness/liveness probes.</p>
+            <code>make kind-test</code>
+          </article>
+          <article class="reveal">
+            <span class="status-tag">SCALE-OUT</span>
+            <h3>Partitioned search</h3>
+            <p>Deterministic single-owner sharding, parallel fan-out, stable global merge, and explicit partial-result semantics.</p>
+            <code>make distributed-test</code>
+          </article>
+        </div>
+        <p class="boundary reveal">
+          <strong>Clear boundary:</strong> the 0.1.0 coordinator partitions but does not replicate data and does not claim consensus,
+          automatic failover, or automatic rebalancing.
+        </p>
+      </section>
+
+      <section class="section shell console-section" id="console">
+        <div class="section-heading reveal">
+          <div>
+            <p class="kicker">05 / OPERATIONS</p>
+            <h2>A real console for a real engine.</h2>
+          </div>
+          <p>
+            These views were captured by Playwright while driving the production Next.js console against
+            the Rust backend. Select a view to inspect it.
+          </p>
+        </div>
+        <div class="console-tabs reveal" role="tablist" aria-label="Axion console screenshots">
+          <button role="tab" aria-selected="true" data-image="assets/console-overview.png" data-alt="Axion operational overview">Overview</button>
+          <button role="tab" aria-selected="false" data-image="assets/console-collections.png" data-alt="Axion collection management">Collections</button>
+          <button role="tab" aria-selected="false" data-image="assets/console-vector-explorer.png" data-alt="Axion PCA vector explorer">Vector explorer</button>
+          <button role="tab" aria-selected="false" data-image="assets/console-search-playground.png" data-alt="Axion search playground">Search</button>
+        </div>
+        <div class="console-frame reveal">
+          <div class="browser-bar"><i></i><i></i><i></i><span>axion / console</span></div>
+          <img id="console-image" src="assets/console-overview.png" alt="Axion operational overview" />
+        </div>
+      </section>
+
+      <section class="section shell quickstart" id="quickstart">
+        <div class="quickstart-copy reveal">
+          <p class="kicker">06 / DEVELOPER EXPERIENCE</p>
+          <h2>Useful in four calls.</h2>
+          <p>Run Axion, create a collection, write a vector, and search. The typed client validates locally and preserves structured metadata.</p>
+          <div class="quick-links">
+            <a href="https://github.com/jonxsong/Axion/blob/main/docs/guides/quickstart.md">Full quickstart <span aria-hidden="true">→</span></a>
+            <a href="https://github.com/jonxsong/Axion/blob/main/docs/api/rest-openapi.json">OpenAPI 3.1 <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <div class="code-window reveal">
+          <div class="code-title"><i></i><i></i><i></i><span>quickstart.py</span><button id="copy-code" type="button">Copy</button></div>
+          <pre><code id="quickstart-code"><span class="purple">from</span> axion_client <span class="purple">import</span> AxionClient
+
+client = AxionClient(<span class="green">"http://localhost:8080"</span>)
+client.create_collection(
+    <span class="green">"documents"</span>, dimensions=<span class="gold">384</span>, metric=<span class="green">"cosine"</span>
+)
+client.upsert(<span class="green">"documents"</span>, [{
+    <span class="green">"id"</span>: <span class="green">"doc-1"</span>, <span class="green">"values"</span>: embedding,
+    <span class="green">"metadata"</span>: {<span class="green">"team"</span>: <span class="green">"search"</span>}
+}])
+results = client.search(<span class="green">"documents"</span>, query, top_k=<span class="gold">10</span>)</code></pre>
+        </div>
+      </section>
+
+      <section class="closing shell reveal">
+        <p class="kicker">OPEN SOURCE · MIT LICENSE</p>
+        <h2>Search systems should make their trade-offs visible.</h2>
+        <p>Inspect the engine, reproduce the evidence, and deploy it on infrastructure you control.</p>
+        <div>
+          <a class="button" href="https://github.com/jonxsong/Axion">Explore Axion on GitHub <span aria-hidden="true">↗</span></a>
+          <a class="button button-ghost" href="https://github.com/jonxsong/Axion/blob/main/CONTRIBUTING.md">Contribute</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="shell">
+      <a class="brand" href="#top"><img src="assets/axion-logo.svg" alt="" width="27" height="27" /><span>AXION</span></a>
+      <p>Vector search, engineered from first principles.</p>
+      <nav aria-label="Footer navigation">
+        <a href="https://github.com/jonxsong/Axion">GitHub</a>
+        <a href="https://github.com/jonxsong/Axion/tree/main/docs">Docs</a>
+        <a href="https://github.com/jonxsong/Axion/blob/main/LICENSE">MIT License</a>
+      </nav>
+    </footer>
+  </body>
+</html>

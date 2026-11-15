@@ -3,6 +3,8 @@
 node_modules/
 .next/
 dist/
+!sites/axion/dist/
+!sites/axion/dist/**
 coverage/
 .env
 .env.local

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 128" role="img" aria-labelledby="title desc">
+  <title id="title">Axion</title>
+  <desc id="desc">Axion vector search wordmark</desc>
+  <rect width="520" height="128" rx="26" fill="#0a0c0f"/>
+  <rect width="112" height="112" x="8" y="8" rx="24" fill="#11181c" stroke="#263431"/>
+  <path d="M26 89 59.8 25h12.4L104 89H87L80.4 74H49.8L42.7 89H26Z" fill="#f1f5f4"/>
+  <path d="m56 60 9-20 9 20H56Z" fill="#0a0c0f"/>
+  <circle cx="98" cy="28" r="10" fill="#6ee7b7"/>
+  <text x="148" y="87" fill="#f1f5f4" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="70" font-weight="700" letter-spacing="9">AXION</text>
+</svg>
