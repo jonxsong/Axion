@@ -1,0 +1,14 @@
+{
+  "dataset": "random-xs-20-euclidean",
+  "runs": 3,
+  "count": 10,
+  "framework_repository": "https://github.com/erikbern/ann-benchmarks",
+  "framework_revision": "2e081ad32c1eccab72dcb739ad886c310b90f715",
+  "axion_revision": "864fba79b47859ae9962d07c49efec2a5192205b",
+  "timestamp_utc": "2026-11-15T22:43:04.0085713Z",
+  "cpu": "AMD Ryzen 7 7800X3D 8-Core Processor           ",
+  "physical_cores": 8,
+  "logical_processors": 16,
+  "memory_bytes": 50700304384,
+  "runner": "official Docker runner, one pinned CPU per algorithm"
+}

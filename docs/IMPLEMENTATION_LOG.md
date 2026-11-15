@@ -133,6 +133,22 @@
 - Committed the Criterion estimate JSON and a host/configuration report under `benchmarks/results/criterion-20261115/`.
 - The results are explicitly scoped to local implementation analysis; comparative recall and QPS remain owned by the official ANN-Benchmarks release gate.
 
+## 2026-11-15 — Official ANN-Benchmarks comparison
+
+### Implemented
+
+- Added a native Axion algorithm definition and Docker adapter for the official `erikbern/ann-benchmarks` framework.
+- The adapter launches the real Axion service, writes the standardized train split through the batch REST API into RocksDB, and performs approximate searches through the public REST API.
+- Added a reproducible runner pinned to framework commit `2e081ad32c1eccab72dcb739ad886c310b90f715`, with hnswlib as the established comparison implementation.
+- The first comparative run exposed disconnected reverse graph edges and 0.558 recall. Fixed the construction invariant, added a 2,000-node reachability regression, and reran from pushed Axion commit `864fba79b47859ae9962d07c49efec2a5192205b`.
+
+### Validation
+
+- Official Docker runner: passed for Axion and hnswlib on `random-xs-20-euclidean`, 9,000 train vectors, 1,000 queries, top 10, three timed runs, one pinned CPU per implementation.
+- Axion recall@10 progressed from 0.9840 at efSearch=8 to 0.9990 at 32 and 1.0000 at 64; measured QPS ranged from 3,873.9 to 2,030.4 across the six breadth settings.
+- hnswlib recall@10 progressed from 0.9724 at efQuery=8 to 1.0000 at 64; its in-process QPS ranged from 158,887.2 to 17,441.2.
+- The comparison is intentionally end-to-end: Axion includes HTTP JSON handling and RocksDB metadata retrieval, while hnswlib is invoked in process. Raw CSV, framework plot, host metadata, exact revisions, and an interpretation are committed under `benchmarks/results/20261115-224055/`.
+
 
 
 ## 2026-11-15 — REST API
