@@ -83,6 +83,25 @@
 - Built `axion_client-0.1.0-py3-none-any.whl` successfully.
 - Live SDK-to-server smoke test: created `sdk-smoke`, upserted `py-1`, searched it, and round-tripped `{"client":"python"}` metadata.
 
+## 2026-11-15 — Landing page and management console
+
+### Implemented
+
+- Added a dark-first Next.js landing page with original Axion branding, responsive layout, vector graph visual, architecture flow, real capability copy, Python example, and honest benchmark language.
+- Added a live API-backed console with overview, collections, PCA vector explorer, exact/approximate search playground, index configuration, Prometheus performance, health, documentation, and session-local API-key settings.
+- All unavailable measurements show an explicit unavailable state. No metrics, customers, or performance claims are fabricated.
+- Added accessible navigation, focus styles, reduced-motion handling, mobile breakpoints, SEO metadata, and SVG favicon.
+
+### Validation
+
+- ESLint with zero warnings: passed.
+- TypeScript strict check: passed.
+- Vitest: 2 passed (PCA bounds and Prometheus series aggregation).
+- Next.js optimized production build: passed; `/` and `/console` are statically prerendered.
+- Browser visual QA completed for the landing hero and the complete console overview at 1920×1080. Hierarchy, spacing, graph rendering, navigation, and honest empty/unavailable states rendered correctly.
+- Real-backend Playwright and responsive screenshot capture remain open until the Compose environment is assembled.
+
+
 
 ## 2026-11-15 — REST API
 

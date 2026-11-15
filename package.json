@@ -1,0 +1,10 @@
+{
+  "name": "axion-workspace",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "web:dev": "pnpm --filter @axion/web dev",
+    "web:check": "pnpm --filter @axion/web lint && pnpm --filter @axion/web typecheck && pnpm --filter @axion/web test && pnpm --filter @axion/web build"
+  }
+}
+
