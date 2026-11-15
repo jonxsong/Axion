@@ -1,0 +1,204 @@
+openapi: 3.1.0
+info:
+  title: Axion API
+  version: 0.1.0
+  description: Durable exact and approximate vector search.
+servers:
+  - url: http://localhost:8080
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Vector:
+      type: object
+      required: [id, values]
+      properties:
+        id: { type: string, minLength: 1, maxLength: 512 }
+        values:
+          type: array
+          minItems: 1
+          items: { type: number, format: float }
+        metadata: { type: object, additionalProperties: true }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+paths:
+  /health/live:
+    get:
+      operationId: live
+      responses:
+        '200': { description: Process is alive }
+  /health/ready:
+    get:
+      operationId: ready
+      responses:
+        '200': { description: Storage is available }
+        '500': { description: Storage unavailable }
+  /metrics:
+    get:
+      operationId: metrics
+      responses:
+        '200': { description: Prometheus text exposition }
+  /v1/collections:
+    get:
+      operationId: listCollections
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: Collection summaries }
+    post:
+      operationId: createCollection
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, dimensions]
+              properties:
+                name: { type: string }
+                dimensions: { type: integer, minimum: 1 }
+                metric: { type: string, enum: [cosine, euclidean, dot], default: cosine }
+                hnsw:
+                  type: object
+                  properties:
+                    m: { type: integer, minimum: 2, default: 16 }
+                    ef_construction: { type: integer, default: 200 }
+                    ef_search: { type: integer, default: 64 }
+                    random_seed: { type: integer }
+      responses:
+        '201': { description: Collection created }
+        '400': { description: Invalid request }
+        '409': { description: Collection exists }
+  /v1/collections/{name}:
+    parameters:
+      - in: path
+        name: name
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getCollection
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: Collection summary }
+        '404': { description: Collection not found }
+    delete:
+      operationId: deleteCollection
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204': { description: Collection deleted }
+        '404': { description: Collection not found }
+  /v1/collections/{name}/vectors:
+    parameters:
+      - in: path
+        name: name
+        required: true
+        schema: { type: string }
+    get:
+      operationId: listVectors
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: after
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 1000, default: 100 }
+      responses:
+        '200': { description: Vector page }
+    post:
+      operationId: upsertVector
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Vector' }
+      responses:
+        '204': { description: Vector durably upserted }
+        '400': { description: Invalid vector }
+  /v1/collections/{name}/vectors/batch:
+    parameters:
+      - in: path
+        name: name
+        required: true
+        schema: { type: string }
+    post:
+      operationId: upsertVectors
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vectors]
+              properties:
+                vectors:
+                  type: array
+                  minItems: 1
+                  maxItems: 10000
+                  items: { $ref: '#/components/schemas/Vector' }
+      responses:
+        '204': { description: Batch durably upserted }
+        '400': { description: Invalid batch }
+  /v1/collections/{name}/vectors/{id}:
+    parameters:
+      - in: path
+        name: name
+        required: true
+        schema: { type: string }
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getVector
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: Vector record }
+        '404': { description: Vector not found }
+    delete:
+      operationId: deleteVector
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204': { description: Vector deleted }
+        '404': { description: Vector not found }
+  /v1/collections/{name}/search:
+    parameters:
+      - in: path
+        name: name
+        required: true
+        schema: { type: string }
+    post:
+      operationId: search
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vector, top_k]
+              properties:
+                vector:
+                  type: array
+                  items: { type: number, format: float }
+                top_k: { type: integer, minimum: 1 }
+                mode: { type: string, enum: [exact, approximate], default: approximate }
+                ef_search: { type: integer, minimum: 1 }
+                filter:
+                  description: Externally tagged eq/and/or/not expression.
+      responses:
+        '200': { description: Search results and measured server latency }
+        '400': { description: Invalid query }
+

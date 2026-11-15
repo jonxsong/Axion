@@ -66,4 +66,21 @@
 - `cargo clippy --workspace --all-targets -- -D warnings`: passed.
 - `cargo fmt --all -- --check`: passed.
 
+## 2026-11-15 — REST API
+
+### Implemented
+
+- Added versioned collection, vector, batch, pagination, delete, and search routes in Axum.
+- Added structured JSON errors, JSON-rejection handling, optional constant-time bearer authentication, request body and batch limits, configurable CORS, request IDs, tracing, and graceful shutdown.
+- Added liveness, storage-backed readiness, Prometheus metrics, a versioned OpenAPI 3.1 contract, and Swagger UI entry point.
+- Blocking RocksDB work runs on Tokio's blocking pool instead of executor workers.
+
+### Validation
+
+- `cargo test --workspace`: 19 passed, 0 failed.
+- REST integration tests use a temporary real RocksDB database and cover CRUD/search, filtering, invalid JSON values, authentication, health, and metrics.
+- `cargo clippy --workspace --all-targets -- -D warnings`: passed.
+- Live TCP smoke test on `127.0.0.1:18080`: created collection `smoke`, durably inserted `v1`, and returned it at cosine score `1.0` from approximate search.
+
+
 

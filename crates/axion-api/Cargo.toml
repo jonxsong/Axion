@@ -1,0 +1,32 @@
+[package]
+name = "axion-api"
+description = "Axum REST API for Axion"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+axion-core.workspace = true
+axion-index.workspace = true
+axion-query.workspace = true
+axion-storage.workspace = true
+axum.workspace = true
+http.workspace = true
+prometheus.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+subtle.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+http-body-util.workspace = true
+tempfile.workspace = true
+tower.workspace = true
+
+[lints]
+workspace = true
+
