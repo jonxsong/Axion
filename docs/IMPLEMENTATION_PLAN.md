@@ -28,8 +28,8 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
 - [x] **4 — REST and gRPC**
   - [x] Axum API, structured errors, auth, limits, CORS, OpenAPI, graceful shutdown.
   - [x] Equivalent collection/vector/search gRPC operations.
-- [ ] **5 — Python SDK**
-  - [ ] Typed sync/async clients, timeouts, retry policy, packaging, tests, example.
+- [x] **5 — Python SDK**
+  - [x] Typed sync/async clients, timeouts, retry policy, packaging, tests, example.
 - [ ] **6 — Container workflow**
   - [ ] Multi-stage images and `docker compose up --build`.
   - [ ] Health, real API integration flow, restart persistence, clean shutdown.

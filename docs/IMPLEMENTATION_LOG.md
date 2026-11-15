@@ -66,6 +66,24 @@
 - `cargo clippy --workspace --all-targets -- -D warnings`: passed.
 - `cargo fmt --all -- --check`: passed.
 
+## 2026-11-15 — Python SDK
+
+### Implemented
+
+- Added an installable Python 3.12+ `axion-client` package with typed Pydantic models.
+- Added synchronous and asynchronous httpx clients, context management, bearer auth, configurable timeouts, and helpful structured exceptions.
+- Retries are bounded and restricted to reads, search, idempotent upserts, and deletes; collection creation is intentionally not retried.
+- Added a sentence-transformers semantic-search example with embedding generation kept outside Axion.
+
+### Validation
+
+- Installed the package in a clean Python 3.12 virtual environment.
+- Ruff lint and format checks: passed.
+- Pytest: 4 passed, covering sync/async behavior, serialization, auth, safe retry semantics, structured errors, and finite-vector validation.
+- Built `axion_client-0.1.0-py3-none-any.whl` successfully.
+- Live SDK-to-server smoke test: created `sdk-smoke`, upserted `py-1`, searched it, and round-tripped `{"client":"python"}` metadata.
+
+
 ## 2026-11-15 — REST API
 
 ### Implemented
