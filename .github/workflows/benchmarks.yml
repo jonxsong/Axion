@@ -1,0 +1,51 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  criterion:
+    name: Criterion microbenchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install native build dependencies
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends clang cmake libclang-dev
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run Criterion
+        run: cargo bench --package axion-index --bench search --locked
+      - uses: actions/upload-artifact@v6
+        with:
+          name: criterion-${{ github.sha }}
+          path: target/criterion
+          if-no-files-found: error
+          retention-days: 14
+
+  ann-adapter:
+    name: ANN-Benchmarks adapter contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Compile official-framework adapter
+        run: python -m py_compile benchmarks/ann-benchmarks/axion/module.py
+      - name: Validate pinned definition files
+        run: |
+          python -m pip install --disable-pip-version-check pyyaml
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          for path in Path("benchmarks/ann-benchmarks").glob("**/config.yml"):
+              with path.open(encoding="utf-8") as source:
+                  assert yaml.safe_load(source), f"empty definition: {path}"
+              print(f"validated {path}")
+          PY

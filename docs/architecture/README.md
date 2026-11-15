@@ -1,5 +1,7 @@
 # Architecture
 
+![Axion system architecture](axion-architecture.svg)
+
 Axion follows a strict dependency direction:
 
 ```mermaid
