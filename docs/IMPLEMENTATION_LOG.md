@@ -47,3 +47,23 @@
 
 - The recall assertion uses a high-recall HNSW configuration and requires at least 0.90 recall@10. Performance/recall trade-off curves remain a separate ANN-Benchmarks release gate.
 
+## 2026-11-15 — RocksDB storage and query engine
+
+### Implemented
+
+- Installed local LLVM/libclang 23.1.5 and CMake 4.4.4 to build the native RocksDB binding.
+- Made RocksDB the concrete default backend with versioned, length-prefixed keys.
+- Added synchronous WAL-backed atomic batches for collection lifecycle, batch upsert, update, and delete.
+- Added deterministic record pagination and index reconstruction from durable records.
+- Added a collection/query engine with exact and approximate modes, nested metadata fields, and boolean equality filters (AND/OR/NOT).
+- Filtered searches use exact pre-filtering, ensuring all returned records match and fewer than k are returned only when the candidate set is smaller.
+
+### Validation
+
+- `cargo test --workspace`: 17 passed, 0 failed.
+- Storage tests close and reopen RocksDB before asserting acknowledged collection/record recovery.
+- Query tests update and delete vectors, close the engine, reconstruct HNSW, and successfully search recovered data.
+- `cargo clippy --workspace --all-targets -- -D warnings`: passed.
+- `cargo fmt --all -- --check`: passed.
+
+

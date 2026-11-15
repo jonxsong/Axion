@@ -2,6 +2,8 @@
 members = [
     "crates/axion-core",
     "crates/axion-index",
+    "crates/axion-query",
+    "crates/axion-storage",
 ]
 resolver = "2"
 
@@ -14,12 +16,15 @@ rust-version = "1.85"
 
 [workspace.dependencies]
 axion-core = { path = "crates/axion-core" }
+axion-index = { path = "crates/axion-index" }
+axion-storage = { path = "crates/axion-storage" }
 proptest = "1.8"
 rand = "0.9"
 rand_chacha = { version = "0.9", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "2.0"
+tempfile = "3.27"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

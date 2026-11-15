@@ -22,9 +22,9 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
 - [x] **2 — HNSW**
   - [x] From-first-principles multilayer graph, insertion, search, deletion, rebuild.
   - [x] Deterministic recall tests against exact search.
-- [ ] **3 — Durable collection engine**
-  - [ ] RocksDB default, versioned keys, atomic writes, restart recovery.
-  - [ ] CRUD, batch upserts, filtering, pagination, index reconstruction.
+- [x] **3 — Durable collection engine**
+  - [x] RocksDB default, versioned keys, atomic writes, restart recovery.
+  - [x] CRUD, batch upserts, filtering, pagination, index reconstruction.
 - [ ] **4 — REST and gRPC**
   - [ ] Axum API, structured errors, auth, limits, CORS, OpenAPI, graceful shutdown.
   - [ ] Equivalent collection/vector/search gRPC operations.
