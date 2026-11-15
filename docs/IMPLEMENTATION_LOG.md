@@ -101,6 +101,23 @@
 - Browser visual QA completed for the landing hero and the complete console overview at 1920×1080. Hierarchy, spacing, graph rendering, navigation, and honest empty/unavailable states rendered correctly.
 - Real-backend Playwright and responsive screenshot capture remain open until the Compose environment is assembled.
 
+## 2026-11-15 — Production containers
+
+### Implemented
+
+- Added multi-stage, non-root release images for the Rust server and standalone Next.js application.
+- Added a Compose stack with RocksDB named-volume persistence, health-gated startup, configurable host ports, read-only root filesystems, temporary filesystems, resource bounds, and optional Prometheus.
+- Added an executable smoke workflow that creates data through the public API, restarts the Axion container, searches the recovered record, and checks the web application.
+- Added the Criterion harness and the official ANN-Benchmarks adapter/configuration; comparative execution remains a separate release gate.
+
+### Validation
+
+- `docker compose build --parallel`: passed for both production images.
+- `scripts/compose-smoke.ps1`: passed on alternate host ports because the host's default ports were already occupied by unrelated services.
+- A real record survived `docker compose restart axion` and was returned by approximate search after readiness recovered.
+- Both server and web containers reached Docker health status `healthy`; the web landing page returned HTTP 200.
+- The named `axion-data` volume was retained. Compose containers can be stopped without deleting that volume.
+
 
 
 ## 2026-11-15 — REST API

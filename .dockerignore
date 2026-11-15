@@ -1,0 +1,17 @@
+.git
+.github
+.next
+**/.next
+target
+**/target
+node_modules
+**/node_modules
+.venv
+**/.venv
+data
+benchmark-results
+test-results
+playwright-report
+*.log
+*.tsbuildinfo
+

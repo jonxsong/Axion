@@ -8,6 +8,9 @@ coverage/
 .env.local
 !.env.example
 *.log
+*.tsbuildinfo
+.cache/
+benchmarks/results/*/raw/
 *.prof
 *.hprof
 .pytest_cache/
