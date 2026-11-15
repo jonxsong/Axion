@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package axion.v1;
+
+service Axion {
+  rpc CreateCollection(CreateCollectionRequest) returns (Collection);
+  rpc ListCollections(Empty) returns (ListCollectionsResponse);
+  rpc GetCollection(GetCollectionRequest) returns (Collection);
+  rpc DeleteCollection(DeleteCollectionRequest) returns (Empty);
+  rpc Upsert(UpsertRequest) returns (UpsertResponse);
+  rpc ListVectors(ListVectorsRequest) returns (ListVectorsResponse);
+  rpc GetVector(GetVectorRequest) returns (Vector);
+  rpc DeleteVector(DeleteVectorRequest) returns (Empty);
+  rpc Search(SearchRequest) returns (SearchResponse);
+}
+
+message Empty {}
+
+enum DistanceMetric {
+  DISTANCE_METRIC_UNSPECIFIED = 0;
+  DISTANCE_METRIC_COSINE = 1;
+  DISTANCE_METRIC_EUCLIDEAN = 2;
+  DISTANCE_METRIC_DOT = 3;
+}
+
+enum SearchMode {
+  SEARCH_MODE_UNSPECIFIED = 0;
+  SEARCH_MODE_EXACT = 1;
+  SEARCH_MODE_APPROXIMATE = 2;
+}
+
+message HnswConfig {
+  uint32 m = 1;
+  uint32 ef_construction = 2;
+  uint32 ef_search = 3;
+  uint64 random_seed = 4;
+}
+
+message Collection {
+  string name = 1;
+  uint32 dimensions = 2;
+  DistanceMetric metric = 3;
+  HnswConfig hnsw = 4;
+  uint64 vector_count = 5;
+}
+
+message CreateCollectionRequest {
+  string name = 1;
+  uint32 dimensions = 2;
+  DistanceMetric metric = 3;
+  HnswConfig hnsw = 4;
+}
+
+message GetCollectionRequest { string name = 1; }
+message DeleteCollectionRequest { string name = 1; }
+message ListCollectionsResponse { repeated Collection collections = 1; }
+
+message Vector {
+  string id = 1;
+  repeated float values = 2;
+  string metadata_json = 3;
+}
+
+message UpsertRequest {
+  string collection = 1;
+  repeated Vector vectors = 2;
+}
+
+message UpsertResponse { uint64 upserted = 1; }
+
+message ListVectorsRequest {
+  string collection = 1;
+  string after = 2;
+  uint32 limit = 3;
+}
+
+message ListVectorsResponse { repeated Vector vectors = 1; }
+
+message GetVectorRequest {
+  string collection = 1;
+  string id = 2;
+}
+
+message DeleteVectorRequest {
+  string collection = 1;
+  string id = 2;
+}
+
+message SearchRequest {
+  string collection = 1;
+  repeated float vector = 2;
+  uint32 top_k = 3;
+  SearchMode mode = 4;
+  uint32 ef_search = 5;
+  string filter_json = 6;
+}
+
+message SearchResult {
+  string id = 1;
+  float score = 2;
+  string metadata_json = 3;
+}
+
+message SearchResponse {
+  repeated SearchResult results = 1;
+  uint64 took_micros = 2;
+}
+

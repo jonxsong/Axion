@@ -25,9 +25,9 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
 - [x] **3 — Durable collection engine**
   - [x] RocksDB default, versioned keys, atomic writes, restart recovery.
   - [x] CRUD, batch upserts, filtering, pagination, index reconstruction.
-- [ ] **4 — REST and gRPC**
+- [x] **4 — REST and gRPC**
   - [x] Axum API, structured errors, auth, limits, CORS, OpenAPI, graceful shutdown.
-  - [ ] Equivalent collection/vector/search gRPC operations.
+  - [x] Equivalent collection/vector/search gRPC operations.
 - [ ] **5 — Python SDK**
   - [ ] Typed sync/async clients, timeouts, retry policy, packaging, tests, example.
 - [ ] **6 — Container workflow**

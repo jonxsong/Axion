@@ -82,5 +82,23 @@
 - `cargo clippy --workspace --all-targets -- -D warnings`: passed.
 - Live TCP smoke test on `127.0.0.1:18080`: created collection `smoke`, durably inserted `v1`, and returned it at cosine score `1.0` from approximate search.
 
+## 2026-11-15 — gRPC API
+
+### Implemented
+
+- Added a versioned `axion.v1.Axion` protobuf service for collection lifecycle, vector CRUD/listing, batch upsert, and search.
+- Structured metadata and boolean filters cross the protobuf boundary as validated JSON strings so their full JSON types are preserved.
+- Added consistent gRPC status mapping for validation, not-found, duplicate, and internal storage failures.
+- The server process now runs REST and gRPC listeners together over one durable engine and coordinates graceful shutdown.
+- Protobuf compilation uses a vendored `protoc`, keeping fresh builds independent of host installation.
+
+### Validation
+
+- `cargo test --workspace`: 20 passed, 0 failed.
+- The gRPC integration test starts a real ephemeral TCP/HTTP2 server, connects the generated client, creates a collection, upserts a vector, searches it, and verifies structured metadata round-trip.
+- `cargo clippy --workspace --all-targets -- -D warnings`: passed.
+- `cargo fmt --all -- --check`: passed.
+
+
 
 
