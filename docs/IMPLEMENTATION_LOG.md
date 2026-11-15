@@ -27,3 +27,23 @@
 - Git remote clone: passed; repository confirmed empty.
 - Initial environment audit: passed with the Python/kind gaps described above.
 
+## 2026-11-15 — Mathematical core and HNSW
+
+### Implemented
+
+- Added finite, non-empty dense vectors with explicit zero-vector cosine semantics.
+- Added cosine, Euclidean, and dot-product scoring with a uniform higher-is-better API convention.
+- Added exhaustive top-k search with stable score/ID ordering.
+- Added a serializable, incremental multilayer HNSW graph implemented directly in Rust.
+- Added configurable M, construction/search breadth, deterministic levels, logical deletion, and compaction by rebuild.
+
+### Validation
+
+- `cargo test --workspace`: 12 passed, 0 failed, including property tests and measured HNSW recall@10 against exact search on 500 deterministic random vectors.
+- `cargo clippy --workspace --all-targets -- -D warnings`: passed.
+- `cargo fmt --all`: passed.
+
+### Notes
+
+- The recall assertion uses a high-recall HNSW configuration and requires at least 0.90 recall@10. Performance/recall trade-off curves remain a separate ANN-Benchmarks release gate.
+

@@ -16,12 +16,12 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
   - [x] Inspect the repository, remote, host tools, and Docker daemon.
   - [x] Record toolchain gaps without hiding them.
   - [x] Define validation-driven milestones.
-- [ ] **1 — Mathematical core**
-  - [ ] Validated dense vectors, cosine, Euclidean, dot product, normalization.
-  - [ ] Deterministic exact top-k with edge-case and property tests.
-- [ ] **2 — HNSW**
-  - [ ] From-first-principles multilayer graph, insertion, search, deletion, rebuild.
-  - [ ] Deterministic recall tests against exact search.
+- [x] **1 — Mathematical core**
+  - [x] Validated dense vectors, cosine, Euclidean, dot product, normalization.
+  - [x] Deterministic exact top-k with edge-case and property tests.
+- [x] **2 — HNSW**
+  - [x] From-first-principles multilayer graph, insertion, search, deletion, rebuild.
+  - [x] Deterministic recall tests against exact search.
 - [ ] **3 — Durable collection engine**
   - [ ] RocksDB default, versioned keys, atomic writes, restart recovery.
   - [ ] CRUD, batch upserts, filtering, pagination, index reconstruction.

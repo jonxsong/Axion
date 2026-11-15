@@ -1,0 +1,35 @@
+[workspace]
+members = [
+    "crates/axion-core",
+    "crates/axion-index",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/jonxsong/Axion"
+rust-version = "1.85"
+
+[workspace.dependencies]
+axion-core = { path = "crates/axion-core" }
+proptest = "1.8"
+rand = "0.9"
+rand_chacha = { version = "0.9", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+
