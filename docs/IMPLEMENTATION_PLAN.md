@@ -50,10 +50,10 @@ This checklist is an acceptance ledger, not a roadmap graphic. An item is checke
 - [x] **11 — Distributed search**
   - [x] Deterministic sharding, fan-out, merge, health, partial failure behavior.
   - [x] Multi-container integration tests and explicit consistency limitations.
-- [ ] **12 — Documentation and release**
-  - [ ] Architecture SVG/Mermaid, guides, ADRs, API and storage documentation.
-  - [ ] Real screenshots, polished README, CI, final clean-clone validation.
-  - [ ] All checks pass and commits are pushed without rewriting history.
+- [x] **12 — Documentation and release**
+  - [x] Architecture SVG/Mermaid, guides, ADRs, API and storage documentation.
+  - [x] Real screenshots, polished README, CI, final clean-clone validation.
+  - [x] All checks pass and commits are pushed without rewriting history.
 
 ## Validation commands
 

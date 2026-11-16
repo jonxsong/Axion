@@ -66,6 +66,28 @@
 - `cargo clippy --workspace --all-targets -- -D warnings`: passed.
 - `cargo fmt --all -- --check`: passed.
 
+## 2026-11-15 — Production release closure
+
+### Shipped
+
+- Completed every phase in the implementation acceptance ledger and published the production repository without rewriting history.
+- Polished the README around measured evidence, real console screenshots, supported deployment paths, explicit consistency boundaries, and the production architecture diagram.
+- Verified the GitHub About description and topics, and linked the repository README to the deployed Axion presentation.
+- Deployed the presentation to `https://axion-vector-search.perkyaisle4.chatgpt.site` with real product screenshots, architecture, benchmark evidence, responsive navigation, and an interactive vector visualization. Access remains private until the owner explicitly chooses a public audience.
+
+### Final validation
+
+- Rust: formatting, Clippy across all targets with warnings denied, all workspace and documentation tests, and `cargo audit` against 1,509 RustSec advisories passed.
+- Web: a frozen `pnpm` install, ESLint with zero warnings, strict TypeScript, Vitest, and the Next.js production build passed; the production dependency audit reported no known vulnerabilities.
+- Python: a fresh Python 3.12 environment installed the SDK and development extras, then Ruff, four tests, isolated sdist creation, isolated wheel creation, and the dependency audit passed.
+- Compose: production images built, a vector was committed to RocksDB, the Axion container restarted, readiness recovered, and the acknowledged vector remained searchable. Alternate host ports isolated the run from unrelated local services.
+- Clean clone: commit `44bf7e0` cloned from GitHub with no local source dependencies; the complete Rust, web, and Python validation lanes passed from that clone, and all deployable Site assets were confirmed tracked.
+- GitHub Actions: the complete CI workflow for clean-clone source commit `44bf7e0` completed successfully before the release ledger was closed.
+- Kubernetes: the recorded kind acceptance deployed the production manifests, exercised the API, deleted the server pod, and verified the replacement pod could search the record retained on its persistent volume.
+- Comparative search: the official ANN-Benchmarks adapter and standardized `random-xs-20-euclidean` run produced reproducible recall-versus-QPS artifacts alongside established implementations.
+- Distributed search: the two-shard acceptance exercised deterministic partitioning, fan-out/merge, explicit degradation during shard loss, restart recovery, and RocksDB persistence.
+- Presentation QA: desktop and 390×844 mobile layouts, gallery controls, local asset resolution, JavaScript syntax, and production deployment were verified.
+
 ## 2026-11-15 — Python SDK
 
 ### Implemented
